@@ -17,7 +17,7 @@ Recommended ordering of modules to implement:
 - architecture <- csmstructs
 - precompilation <- csmtokens, csmdefaults, csmerrors
 - lexer <- csmerrors, csmtokens, csmdefaults, architecture
-- parser <- csmtokens
+- parser <- csmtokens, csmdefaults
 - instructionpools <- csmerrors, csmtokens, csmdefaults, csmstructs
 - semanticanalyser <- architecture, csmdefaults, csmtokens, csmerrors, csmstructs
 - codegenerator <- binarystring, architecture, csmtokens, csmdefaults, csmstructs
