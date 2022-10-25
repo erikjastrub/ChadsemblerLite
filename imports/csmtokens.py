@@ -41,9 +41,6 @@ class TypedToken:
     row: int
     column: int
 
-    def __repr__(self) -> str:
-        return f"({self.value})"
-
 class tokentypes:
     """Namespace for all token types that can be used in conjunction with the TypedToken class"""
 
