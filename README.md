@@ -1,25 +1,20 @@
-# Empty:
+# Lightweight Chadsembler - Python Optimised
 
-When translating the main branch into another language, this branch should be used as the template to provide an empty branch to begin working from
+This is the Python branch for the Chadsembler.
 
-The README.md of any branch should outline how to run the code in the branch as well as any other information to do with the branch
+The original branch is focused on being language agnostic and so it is written in readable, minimal python so as to not use any language specific features which may make it harder to translate into another language.
 
+This branch is the Python branch and will be optimised using pythonic features and optimisations.
 
-Recommended ordering of modules to implement:
-(shows the module and its dependencies)
+Key Optimisations:
 
-- chadsembler (implement as you go along)
-- csmdefaults
-- csmerrors
-- csmtokens <- csmdefaults
-- binarystring
-- csmstructs <- binarystring, csmtokens
-- architecture <- csmstructs
-- precompilation <- csmtokens, csmdefaults, csmerrors
-- lexer <- csmerrors, csmtokens, csmdefaults, architecture
-- parser <- csmtokens
-- instructionpools <- csmerrors, csmtokens, csmdefaults, csmstructs
-- semanticanalyser <- architecture, csmdefaults, csmtokens, csmerrors, csmstructs
-- codegenerator <- binarystring, architecture, csmtokens, csmdefaults, csmstructs
-- machineoperations <- architecutre, csmstructs, binarystring
-- virtualmachine <- architecture, binarystring, csmdefaults, csmstructs, machineoperations
+- Got rid of the "tokenutils" class previosuly located in the "csmtokens.py" file
+- Use of inheritance between the ArgumentProcessor and Preprocessor
+- Various small syntax sugar optimisations
+- Use of dictionaries for O(1) access of architectural info
+
+How to Run:
+
+Download the Python Branch and run the 'chadsembly.py' file with the source code file you want to execute!
+
+E.g: 'py ./chadsembly.py ./code.csm'
