@@ -1,4 +1,4 @@
-# EMTPY:
+# Empty:
 
 When translating the main branch into another language, this branch should be used as the template to provide an empty branch to begin working from
 
