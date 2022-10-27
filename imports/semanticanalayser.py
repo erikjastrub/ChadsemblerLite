@@ -110,7 +110,7 @@ class SemanticAnalyser:
         token: TypedToken = scope.tokens[index]
 
         #                            An instruction will always be returned
-        instruction: Instruction = instructions.INSTRUCTION_SET[token.value]
+        instruction: Instruction = instructions.get_instruction(token.value)
         number_operands: int = self.__count_operands(index, scope)
 
         if number_operands > instruction.operands:
@@ -118,9 +118,6 @@ class SemanticAnalyser:
             self.__errors.record_error(token.row, token.column, errormessages.EXCESS_OPERANDS.type, errormessages.EXCESS_OPERANDS.message)
 
         else:
-
-            source_operand: Operand | None = None
-            destination_operand: Operand | None = None
 
             if instruction.operands > 1 and \
                scope.tokens[index+1].type == tokentypes.END:
@@ -132,14 +129,7 @@ class SemanticAnalyser:
                 source_operand = self.__get_operand(index+1, scope)
                 self.__analyse_operand(source_operand, scope)
 
-            if instruction.operands > 1:
-
-                destination_operand = self.__get_operand(index+3, scope)
-                self.__analyse_operand(destination_operand, scope)
-
-            # Various Semantic Checks
-            if source_operand is not None:
-
+                # Various Semantic Checks
                 if instruction == instructions.INP and \
                    source_operand.addressing_mode.value != addressingmodes.REGISTER.symbol:
 
@@ -150,8 +140,12 @@ class SemanticAnalyser:
 
                     self.__errors.record_error(token.row, token.column, errormessages.IMMEDIATE_MODE.type, errormessages.IMMEDIATE_MODE.message)
 
-            if destination_operand is not None:
+            if instruction.operands > 1:
 
+                destination_operand = self.__get_operand(index+3, scope)
+                self.__analyse_operand(destination_operand, scope)
+
+                # Various Semantic Checks
                 if destination_operand.addressing_mode.value != addressingmodes.REGISTER.symbol:
 
                     self.__errors.record_error(token.row, token.column, errormessages.NON_REGISTER_DESTINATION_OPERAND.type, errormessages.NON_REGISTER_DESTINATION_OPERAND.message)
