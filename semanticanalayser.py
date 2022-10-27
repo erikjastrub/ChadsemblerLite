@@ -140,15 +140,15 @@ class SemanticAnalyser:
 
                     self.__errors.record_error(token.row, token.column, errormessages.IMMEDIATE_MODE.type, errormessages.IMMEDIATE_MODE.message)
 
-            if instruction.operands > 1:
+                if instruction.operands > 1:
 
-                destination_operand = self.__get_operand(index+3, scope)
-                self.__analyse_operand(destination_operand, scope)
+                    destination_operand = self.__get_operand(index+3, scope)
+                    self.__analyse_operand(destination_operand, scope)
 
-                # Various Semantic Checks
-                if destination_operand.addressing_mode.value != addressingmodes.REGISTER.symbol:
+                    # Various Semantic Checks
+                    if destination_operand.addressing_mode.value != addressingmodes.REGISTER.symbol:
 
-                    self.__errors.record_error(token.row, token.column, errormessages.NON_REGISTER_DESTINATION_OPERAND.type, errormessages.NON_REGISTER_DESTINATION_OPERAND.message)
+                        self.__errors.record_error(token.row, token.column, errormessages.NON_REGISTER_DESTINATION_OPERAND.type, errormessages.NON_REGISTER_DESTINATION_OPERAND.message)
 
     def __semantic_analyse(self, scope: Scope) -> None:
         """Semantically analyse a scope"""
