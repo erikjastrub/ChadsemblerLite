@@ -146,7 +146,7 @@ class Lexer:
 
             case tokentypes.ADDRESSING_MODE:
 
-                token = addressingmodes.ADDRESSING_MODES[token].symbol
+                token = addressingmodes.get_addressing_mode(token).symbol
 
             case tokentypes.LABEL:
 
