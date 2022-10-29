@@ -5,7 +5,7 @@ Original Chadsembler: https://github.com/erikjastrub/Chadsembler
 
 Outline:
 
-- 40% less code than the Original Chadsembler
+- more than 40% less code than the Original Chadsembler
 - Emphasis on modularisation through the use of namespaces and a better file structure
 - Clear dependencies
 - Much much less string manipulation, greatly improving both performance and memory efficiency
