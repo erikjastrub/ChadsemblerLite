@@ -1,7 +1,8 @@
 """Namespace for all token types and token utilities"""
 
 from dataclasses import dataclass
-import csmdefaults
+from csmerrors import Errors, errormessages
+from csmdefaults import defaults, lexerdefaults
 
 @dataclass(slots=True)
 class PositionToken:
@@ -15,7 +16,7 @@ class PositionToken:
         """Given the current_char, will update the row and column attributes accordingly
            Will reset the column attribute to the reset_value if a line break char is encountered"""
 
-        if current_char in csmdefaults.lexerdefaults.LINE_BREAK_CHARS:
+        if current_char in lexerdefaults.LINE_BREAK_CHARS:
 
             self.row += 1
             self.column = reset_value
@@ -98,13 +99,13 @@ class tokenutils:
 
         while current_index < length:
 
-            if text[current_index] not in csmdefaults.lexerdefaults.WHITESPACE_CHARS and \
+            if text[current_index] not in lexerdefaults.WHITESPACE_CHARS and \
                text[current_index] != delimiter:
 
                 lower_index = current_index
 
                 while current_index < length and \
-                      text[current_index] not in csmdefaults.lexerdefaults.WHITESPACE_CHARS and \
+                      text[current_index] not in lexerdefaults.WHITESPACE_CHARS and \
                       text[current_index] != delimiter:
 
                     current_index += 1
@@ -112,7 +113,7 @@ class tokenutils:
 
                 tokens.append(
                     UntypedToken(
-                        csmdefaults.defaults.default_casing(text[lower_index:current_index]),
+                        defaults.default_casing(text[lower_index:current_index]),
                         position.row,
                         # Subtract the length of the token from the current position to get the starting position of the token 
                         position.column - (current_index - lower_index)
@@ -127,46 +128,69 @@ class tokenutils:
         return tokens
 
     @staticmethod
-    def valid_number_tokens(tokens: list[UntypedToken]) -> bool:
+    def valid_number_tokens(tokens: list[UntypedToken], errors: Errors) -> bool:
         """Verify the amount of tokens generated"""
 
-        return len(tokens) == 2
+        if len(tokens) == 2:
+
+            return True
+
+        elif len(tokens) > 0:
+
+            errors.record_error(tokens[0].row, tokens[0].column, errormessages.SINGLE_KEY_VALUE_PAIR.type, errormessages.SINGLE_KEY_VALUE_PAIR.message)
+
+        return False
 
     @staticmethod
-    def valid_configuration_option(option: UntypedToken, configuration_table: dict[str, int]) -> bool:
+    def valid_config_option(option: UntypedToken, configuration_table: dict[str, int], errors: Errors) -> bool:
         """Verify the validity of the config option"""
 
-        return option.value in configuration_table
+        if option.value in configuration_table:
+
+            return True
+
+        else:
+
+            errors.record_error(option.row, option.column, errormessages.UNKNOWN_CONFIG_OPTION.type, errormessages.UNKNOWN_CONFIG_OPTION.message)
+            return False
 
     @staticmethod
-    def contains_no_sign(value: UntypedToken) -> bool:
+    def contains_no_sign(value: UntypedToken, errors: Errors) -> bool:
         """Verify the config value has no sign (+ or -)"""
 
-        return value.value[0] not in csmdefaults.lexerdefaults.VALUE_SIGNS
+        if value.value[0] in lexerdefaults.VALUE_SIGNS:
+
+            errors.record_error(value.row, value.column, errormessages.SIGN_SPECIFIED.type, errormessages.SIGN_SPECIFIED.message)
+            return False
+
+        else:
+
+            return True
 
     @staticmethod
-    def valid_configuration_value(value: UntypedToken) -> bool:
+    def valid_config_value(value: UntypedToken, errors: Errors) -> bool:
         """Verify the validity of the config value"""
 
         for c in value.value:
 
             if not c.isdigit():
 
+                errors.record_error(value.row, value.column, errormessages.INVALID_CONFIG_VALUE.type, errormessages.INVALID_CONFIG_VALUE.message)
                 return False
 
         return True
 
     @staticmethod
-    def update_configuration_table(option: UntypedToken, value: UntypedToken, configuration_table: dict[str, int]) -> bool:
+    def update_config_table(option: UntypedToken, value: UntypedToken, configuration_table: dict[str, int], errors: Errors) -> bool:
         """Update the config table if the option and value are valid"""
 
         # Previous checks will ensure this can always be converted to an int
         value_int = int(value.value)
 
-        minimum = -1
+        minimum = 0
 
         # Previous checks will ensure this will always correspond to a valid option
-        for config in (csmdefaults.defaults.CLOCK_CONFIG, csmdefaults.defaults.REGISTERS_CONFIG, csmdefaults.defaults.MEMORY_CONFIG):
+        for config in (defaults.CLOCK_CONFIG, defaults.REGISTERS_CONFIG, defaults.MEMORY_CONFIG):
 
             if config[0] == option.value:
 
@@ -174,7 +198,10 @@ class tokenutils:
 
         if value_int < minimum:
 
+            errors.record_error(value.row, value.column, errormessages.MINIMUM_VALUE.type, errormessages.MINIMUM_VALUE.message);
             return False
 
-        configuration_table[option.value] = value_int
-        return True
+        else: 
+            
+            configuration_table[option.value] = value_int
+            return True
