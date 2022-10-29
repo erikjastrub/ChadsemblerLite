@@ -2,7 +2,7 @@
 
 from csmtokens import tokenutils, PositionToken, UntypedToken
 from csmdefaults import defaults, lexerdefaults
-from csmerrors import errormessages, Errors
+from csmerrors import Errors
 
 class ArgumentProcessor:
     """Tokenise, parse and validate the command line arguments passed into the program"""
@@ -19,83 +19,25 @@ class ArgumentProcessor:
         self.__errors: Errors = Errors()
         self.__position: PositionToken = PositionToken(1, 1)
 
-    def __tokenise(self, argument: str) -> list[UntypedToken]:
-        """Split a directive into its individual components"""
-
-        return tokenutils.tokenise(argument, self.__directive_prefix, self.__delimiter, self.__position)
-
-    def __valid_number_tokens(self, tokens: list[UntypedToken]) -> bool:
-        """Verify the amount of tokens generated"""
-
-        if tokenutils.valid_number_tokens(tokens):
-
-            return True
-
-        elif tokens:
-
-            self.__errors.record_error(tokens[0].row, 0, errormessages.SINGLE_KEY_VALUE_PAIR.type, errormessages.SINGLE_KEY_VALUE_PAIR.message)
-        
-        return False
-
-    def __valid_configuration_option(self, option: UntypedToken) -> bool:
-        """Verify the validity of the config option"""
-
-        if tokenutils.valid_configuration_option(option, self.__config_table):
-
-            return True
-
-        self.__errors.record_error(option.row, option.column, errormessages.UNKNOWN_CONFIG_OPTION.type, errormessages.UNKNOWN_CONFIG_OPTION.message)
-        return False
-
-    def __contains_no_sign(self, value: UntypedToken) -> bool:
-        """Verify the config value has no sign (+ or -)"""
-
-        if tokenutils.contains_no_sign(value):
-
-            return True
-
-        self.__errors.record_error(value.row, value.column, errormessages.SIGN_SPECIFIED.type, errormessages.SIGN_SPECIFIED.message)
-        return False
-
-    def __valid_configuration_value(self, value: UntypedToken) -> bool:
-        """Verify the validity of the config value"""
-
-        if tokenutils.valid_configuration_value(value):
-
-            return True
-
-        self.__errors.record_error(value.row, value.column, errormessages.INVALID_CONFIG_VALUE.type, errormessages.INVALID_CONFIG_VALUE.message)
-        return False
-
-    def __update_configuration_table(self, option: UntypedToken, value: UntypedToken) -> bool:
-        """Update the config table if the option and value are valid"""
-
-        if tokenutils.update_configuration_table(option, value, self.__config_table):
-
-            return True
-
-        self.__errors.record_error(value.row, value.column, errormessages.MINIMUM_VALUE.type, errormessages.MINIMUM_VALUE.message)
-        return False
-
     def __parse(self, tokens: list[UntypedToken]) -> None:
         """Apply all validation checks on the tokens generated from a command-line argument"""
 
-        if self.__valid_number_tokens(tokens):
+        if tokenutils.valid_number_tokens(tokens, self.__errors):
 
-            option, value = tokens
+            option, value = tokens[0], tokens[1]
 
-            if self.__valid_configuration_option(option) and \
-               self.__contains_no_sign(value) and \
-               self.__valid_configuration_value(value):
+            if tokenutils.valid_config_option(option, self.__config_table, self.__errors) and \
+               tokenutils.contains_no_sign(value, self.__errors) and \
+               tokenutils.valid_config_value(value, self.__errors):
             
-                self.__update_configuration_table(option, value)
+                tokenutils.update_config_table(option, value, self.__config_table, self.__errors)
 
     def run(self) -> None:
         """Run the ArgumentProcessor"""
 
         for arg in self.__arguments:
 
-            self.__parse( self.__tokenise(arg) )
+            self.__parse( tokenutils.tokenise(arg, self.__directive_prefix, self.__delimiter, self.__position) )
 
             self.__position.row += 1
             self.__position.column = 0
@@ -151,82 +93,23 @@ class Preprocessor:
 
         return directive
 
-    def __tokenise(self, directive: str) -> list[UntypedToken]:
-        """Split a directive into its individual components"""
-
-        return tokenutils.tokenise(directive, self.__directive_prefix, self.__delimiter, self.__position)
-
-    def __valid_number_tokens(self, tokens: list[UntypedToken]) -> bool:
-        """Verify the amount of tokens generated"""
-
-        if tokenutils.valid_number_tokens(tokens):
-
-            return True
-
-        elif tokens:
-
-            self.__errors.record_error(tokens[0].row, tokens[0].column, errormessages.SINGLE_KEY_VALUE_PAIR.type, errormessages.SINGLE_KEY_VALUE_PAIR.message)
-        
-        return False
-
-    def __valid_configuration_option(self, option: UntypedToken) -> bool:
-        """Verify the validity of the config option"""
-
-        if tokenutils.valid_configuration_option(option, self.__config_table):
-
-            return True
-
-        self.__errors.record_error(option.row, option.column, errormessages.UNKNOWN_CONFIG_OPTION.type, errormessages.UNKNOWN_CONFIG_OPTION.message)
-        return False
-
-    def __contains_no_sign(self, value: UntypedToken) -> bool:
-        """Verify the config value has no sign (+ or -)"""
-
-        if tokenutils.contains_no_sign(value):
-
-            return True
-
-        self.__errors.record_error(value.row, value.column, errormessages.SIGN_SPECIFIED.type, errormessages.SIGN_SPECIFIED.message)
-        return False
-
-    def __valid_configuration_value(self, value: UntypedToken) -> bool:
-        """Verify the validity of the config value"""
-
-        if tokenutils.valid_configuration_value(value):
-
-            return True
-
-        self.__errors.record_error(value.row, value.column, errormessages.INVALID_CONFIG_VALUE.type, errormessages.INVALID_CONFIG_VALUE.message)
-        return False
-
-    def __update_configuration_table(self, option: UntypedToken, value: UntypedToken) -> bool:
-        """Update the config table if the option and value are valid"""
-
-        if tokenutils.update_configuration_table(option, value, self.__config_table):
-
-            return True
-
-        self.__errors.record_error(value.row, value.column, errormessages.MINIMUM_VALUE.type, errormessages.MINIMUM_VALUE.message)
-        return False
-
     def __parse(self, tokens: list[UntypedToken]) -> None:
-        """Apply all validation checks on the tokens generated from a directive"""
+        """Apply all validation checks on the tokens generated from a command-line argument"""
 
-        if self.__valid_number_tokens(tokens):
+        if tokenutils.valid_number_tokens(tokens, self.__errors):
 
-            # Unpack the tokens into a config option and config value
-            option, value = tokens
+            option, value = tokens[0], tokens[1]
 
-            if self.__valid_configuration_option(option) and \
-               self.__contains_no_sign(value) and \
-               self.__valid_configuration_value(value):
+            if tokenutils.valid_config_option(option, self.__config_table, self.__errors) and \
+               tokenutils.contains_no_sign(value, self.__errors) and \
+               tokenutils.valid_config_value(value, self.__errors):
             
-                self.__update_configuration_table(option, value)
+                tokenutils.update_config_table(option, value, self.__config_table, self.__errors)
 
     def __handle_directive(self) -> None:
         """Apply all validation checks over tokens generated from a directive"""
 
-        self.__parse( self.__tokenise( self.__get_directive() ) )
+        self.__parse( tokenutils.tokenise(self.__get_directive(), self.__directive_prefix, self.__delimiter, self.__position ) )
 
     def run(self) -> None:
         """Run the Preprocessor"""
