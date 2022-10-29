@@ -19,25 +19,13 @@ class ArgumentProcessor:
         self.__errors: Errors = Errors()
         self.__position: PositionToken = PositionToken(1, 1)
 
-    def __parse(self, tokens: list[UntypedToken]) -> None:
-        """Apply all validation checks on the tokens generated from a command-line argument"""
-
-        if tokenutils.valid_number_tokens(tokens, self.__errors):
-
-            option, value = tokens[0], tokens[1]
-
-            if tokenutils.valid_config_option(option, self.__config_table, self.__errors) and \
-               tokenutils.contains_no_sign(value, self.__errors) and \
-               tokenutils.valid_config_value(value, self.__errors):
-            
-                tokenutils.update_config_table(option, value, self.__config_table, self.__errors)
-
     def run(self) -> None:
         """Run the ArgumentProcessor"""
 
         for arg in self.__arguments:
 
-            self.__parse( tokenutils.tokenise(arg, self.__directive_prefix, self.__delimiter, self.__position) )
+            tokens: list[UntypedToken] = tokenutils.tokenise(arg, self.__directive_prefix, self.__delimiter, self.__position)
+            tokenutils.parse(tokens, self.__config_table, self.__errors)
 
             self.__position.row += 1
             self.__position.column = 0
@@ -93,23 +81,12 @@ class Preprocessor:
 
         return directive
 
-    def __parse(self, tokens: list[UntypedToken]) -> None:
-        """Apply all validation checks on the tokens generated from a command-line argument"""
-
-        if tokenutils.valid_number_tokens(tokens, self.__errors):
-
-            option, value = tokens[0], tokens[1]
-
-            if tokenutils.valid_config_option(option, self.__config_table, self.__errors) and \
-               tokenutils.contains_no_sign(value, self.__errors) and \
-               tokenutils.valid_config_value(value, self.__errors):
-            
-                tokenutils.update_config_table(option, value, self.__config_table, self.__errors)
-
     def __handle_directive(self) -> None:
         """Apply all validation checks over tokens generated from a directive"""
 
-        self.__parse( tokenutils.tokenise(self.__get_directive(), self.__directive_prefix, self.__delimiter, self.__position ) )
+        tokens: list[UntypedToken] = tokenutils.tokenise(self.__get_directive(), self.__directive_prefix, self.__delimiter, self.__position )
+
+        tokenutils.parse(tokens, self.__config_table, self.__errors)
 
     def run(self) -> None:
         """Run the Preprocessor"""
