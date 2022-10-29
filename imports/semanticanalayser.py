@@ -110,7 +110,7 @@ class SemanticAnalyser:
         token: TypedToken = scope.tokens[index]
 
         #                            An instruction will always be returned
-        instruction: Instruction = instructions.get_instruction(token.value)
+        instruction: Instruction = instructions.INSTRUCTION_SET[token.value]
         number_operands: int = self.__count_operands(index, scope)
 
         if number_operands > instruction.operands:
