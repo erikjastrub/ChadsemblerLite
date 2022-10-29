@@ -134,15 +134,13 @@ class ArgumentProcessor:
 
         tokens: list[UntypedToken] = self.__tokenise(directive)
 
-        if self.__valid_number_tokens(tokens):
-
-            option, value = tokens
-
-            if self.__valid_configuration_option(option) and \
-               self.__contains_no_sign(value) and \
-               self.__valid_configuration_value(value):
-            
-                self.__update_configuration_table(option, value)
+        # Perform each operation in sequence ensuring the 
+        # next operation occurs only if the previous operation was successful
+        self.__valid_number_tokens(tokens) and \
+        self.__valid_configuration_option(tokens[0]) and \
+        self.__contains_no_sign(tokens[1]) and \
+        self.__valid_configuration_value(tokens[1]) and \
+        self.__update_configuration_table(tokens[0], tokens[1])
 
     def run(self) -> None:
         """Run the ArgumentProcessor"""
