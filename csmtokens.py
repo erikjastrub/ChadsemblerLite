@@ -205,3 +205,18 @@ class tokenutils:
             
             configuration_table[option.value] = value_int
             return True
+
+    @staticmethod
+    def parse(tokens: list[UntypedToken], config_table: dict[str, int], errors: Errors):
+        """Convenience method, wrapping all other methods together"""
+
+        if tokenutils.valid_number_tokens(tokens, errors):
+
+            option: UntypedToken = tokens[0]
+            value: UntypedToken = tokens[1]
+
+            if tokenutils.valid_config_option(option, config_table, errors) and \
+               tokenutils.contains_no_sign(value, errors) and \
+               tokenutils.valid_config_value(value, errors):
+
+                tokenutils.update_config_table(option, value, config_table, errors)
