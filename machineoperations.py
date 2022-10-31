@@ -234,8 +234,6 @@ class MachineOperations:
         """1 Operand - Invoke the address held in the source operand
            The RR is updated to store the current address"""
 
-        # print("CALL source:", source)
-        # print("CALL destination:", destination)
         self.__memory.insert_binary(self.__return_register_address, 
                                     self.__memory.get(self.__program_counter_address))
 
