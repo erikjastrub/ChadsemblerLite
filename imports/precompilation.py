@@ -150,7 +150,7 @@ class ArgumentProcessor:
             self._parse( directive )
 
             self._position.row += 1
-            self._position.column = 0
+            self._position.column = 1
 
         self._errors.get_errors(defaults.ARGUMENT_PROCESSOR_ERRORS_HEADER)
 
