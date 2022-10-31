@@ -43,8 +43,8 @@ class lexerdefaults(metaclass=namespace):
     RIGHT_SCOPE: str = '}'
     SCOPE_CHARS: str = LEFT_SCOPE + RIGHT_SCOPE
 
-    SPACING_CHARS: str = " \t\v"
-    LINE_BREAK_CHARS: str = "\n\r\f"
+    SPACING_CHARS: str = " \t"
+    LINE_BREAK_CHARS: str = "\n"
     WHITESPACE_CHARS: str = SPACING_CHARS + LINE_BREAK_CHARS
 
     LABEL_BEGIN_CHARS: str = "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "_"
