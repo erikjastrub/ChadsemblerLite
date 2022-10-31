@@ -28,7 +28,7 @@ class ArgumentProcessor:
             tokenutils.parse(tokens, self.__config_table, self.__errors)
 
             self.__position.row += 1
-            self.__position.column = 0
+            self.__position.column = 1
 
         self.__errors.get_errors(defaults.ARGUMENT_PROCESSOR_ERRORS_HEADER)
 
