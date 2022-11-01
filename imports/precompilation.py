@@ -11,7 +11,7 @@ class ArgumentProcessor:
                  config_table: dict[str, int]) -> None:
         """Constructor for a 'ArgumentProcessor' object"""
 
-        self._directives: list[str] = arguments
+        self._directives: list[str | list[UntypedToken]] = arguments
         self._directive_prefix: str = directive_prefix
         self._delimiter: str = delimiter
         self._config_table: dict[str, int] = config_table
@@ -19,7 +19,7 @@ class ArgumentProcessor:
         self._errors: Errors = Errors()
         self._position: PositionToken = PositionToken(1, 1)
 
-    def __tokenise(self, directive: str) -> list[UntypedToken]:
+    def _tokenise(self, directive: str) -> list[UntypedToken]:
         """Split a directive into its individual components"""
 
         tokens: list[UntypedToken] = []
@@ -58,6 +58,8 @@ class ArgumentProcessor:
 
                 current_index += 1
                 self._position.column += 1
+
+        self._position.column -= 1
 
         return tokens
 
@@ -129,10 +131,8 @@ class ArgumentProcessor:
         self._config_table[option.value] = value_int
         return True
 
-    def _parse(self, directive: str) -> None:
+    def _parse(self, tokens: list[UntypedToken]) -> None:
         """Apply all validation checks on the tokens generated from a command-line argument"""
-
-        tokens: list[UntypedToken] = self.__tokenise(directive)
 
         # Perform each operation in sequence ensuring the 
         # next operation occurs only if the previous operation was successful
@@ -147,7 +147,7 @@ class ArgumentProcessor:
 
         for directive in self._directives:
 
-            self._parse( directive )
+            self._parse( self._tokenise(directive) )
 
             self._position.row += 1
             self._position.column = 1
@@ -172,7 +172,7 @@ class Preprocessor(ArgumentProcessor):
     def __skip_comment(self) -> None:
         """Iterate over and ignore a Chadsembly comment in a source code file"""
 
-        while self.__index < self.__length and \
+        while self.__index+1 < self.__length and \
               self.__source_code[self.__index] not in lexerdefaults.LINE_BREAK_CHARS:
 
             self.__index += 1
@@ -184,18 +184,13 @@ class Preprocessor(ArgumentProcessor):
         self.__index += 1
 
         while self.__index < self.__length and \
-              self.__source_code[self.__index] not in lexerdefaults.LINE_BREAK_CHARS and \
-              self.__source_code[self.__index] != self._directive_prefix and \
-              self.__source_code[self.__index] != self.__comment_prefix:
-
+              self.__source_code[self.__index] not in (lexerdefaults.LINE_BREAK_CHARS, 
+                                                       self._directive_prefix, 
+                                                       self.__comment_prefix):
             self.__index += 1
 
         directive = self.__source_code[lower:self.__index]
-
-        if directive == '!':
-
-            self.__index -= 1
-            self._position.column -= 1
+        self.__index -= 1
 
         return directive
 
@@ -215,13 +210,15 @@ class Preprocessor(ArgumentProcessor):
                 case self._directive_prefix:
 
                     parallel_positions.append(PositionToken(self._position.row, self._position.column))
-                    self._directives.append( self.__get_directive() )
+                    self._directives.append( self._tokenise(self.__get_directive()) )
 
-            if self.__index < self.__length:
-
-                self._position.advance_position(self.__source_code[self.__index], 1)
+            if self.__source_code[self.__index] in lexerdefaults.LINE_BREAK_CHARS:
+                
+                self._position.row += 1
+                self._position.column = 0
 
             self.__index += 1
+            self._position.column += 1
 
         for directive, position in zip(self._directives, parallel_positions):
 
