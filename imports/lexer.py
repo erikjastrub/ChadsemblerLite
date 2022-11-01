@@ -98,29 +98,18 @@ class Lexer:
     def __handle_value(self, token: str) -> None:
         """Will verify the validity of a value token, recording errors if invalid"""
 
-        index, length = 1 if token[0] in lexerdefaults.VALUE_SIGNS else 0, len(token)
+        if any(c not in lexerdefaults.VALUE_CHARS for c in token[1 if token[0] in lexerdefaults.VALUE_SIGNS else 0:]):
 
-        while index < length:
-
-            if token[index] not in lexerdefaults.VALUE_CHARS:
-
-                self.__errors.record_error(self.__position.row, self.__position.column+index,
+            self.__errors.record_error(self.__position.row, self.__position.column,
                                     errormessages.INVALID_VALUE.type, errormessages.INVALID_VALUE.message)
-
-            index += 1
 
     def __handle_label(self, token: str) -> None:
         """Will verify the validity of a label token, recording errors if invalid"""
 
-        index, length = 0, len(token)
+        if any(c not in lexerdefaults.LABEL_CHARS for c in token):
 
-        while index < length:
-
-            if token[index] not in lexerdefaults.LABEL_CHARS:
-
-                self.__errors.record_error(self.__position.row, self.__position.column+index,
+            self.__errors.record_error(self.__position.row, self.__position.column,
                                     errormessages.INVALID_LABEL.type, errormessages.INVALID_LABEL.message)
-            index += 1
 
     def __handle_token(self) -> TypedToken:
         """Will determine the token type and call the appropriate methods to verify the validity"""
