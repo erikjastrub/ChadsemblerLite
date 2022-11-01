@@ -89,8 +89,6 @@ class Preprocessor:
 
         while self.__index < self.__length:
 
-            print(f"{self.__source_code[self.__index]=}")
-
             match self.__source_code[self.__index]:
 
                 case self.__comment_prefix:
