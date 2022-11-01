@@ -69,8 +69,8 @@ class errormessages:
     MINIMUM_VALUE: ErrorMessage         = ErrorMessage(errortypes.MINIMUM_VALUE , "Value is below its minimum")
 
     # Lexer Errors:
-    INVALID_VALUE: ErrorMessage = ErrorMessage(errortypes.INVALID_VALUE, "Value contains non-value character")
-    INVALID_LABEL: ErrorMessage = ErrorMessage(errortypes.INVALID_LABEL, "Label contains non-label character")
+    INVALID_VALUE: ErrorMessage = ErrorMessage(errortypes.INVALID_VALUE, "A value can only contain digits")
+    INVALID_LABEL: ErrorMessage = ErrorMessage(errortypes.INVALID_LABEL, "A Label can only contain letters, digits and underscores")
 
     # Instruction Pool Errors:
     PROC_TO_BRANCH_REDECL: ErrorMessage   = ErrorMessage(errortypes.BRANCH_LABEL  , "Attempting to redeclare a procedure label to a branch label")
