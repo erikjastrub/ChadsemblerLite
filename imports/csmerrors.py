@@ -1,7 +1,6 @@
 """Namespace for all error related functinality"""
 
 from dataclasses import dataclass
-from meta import namespace
 
 @dataclass(slots=True)
 class Error:
@@ -40,14 +39,16 @@ class Errors:
 
 @dataclass(slots=True)
 class ErrorMessage:
+    """Dataclass grouping all error message related data"""
 
     type: str
     message: str
 
-class errormessages(metaclass=namespace):
+class errormessages:
     """Namespace for all error messages which consist of an error type and the error message itself"""
 
-    class errortypes(metaclass=namespace):
+    class errortypes:
+        """Namespace for all error types that an error message can contain"""
 
         SYNTAX: str                  = "Syntax Error"
         UNKNOWN_OPTION: str          = "Unknown Option Error"
@@ -68,25 +69,25 @@ class errormessages(metaclass=namespace):
     MINIMUM_VALUE: ErrorMessage         = ErrorMessage(errortypes.MINIMUM_VALUE , "Value is below its minimum")
 
     # Lexer Errors:
-    INVALID_VALUE: ErrorMessage = ErrorMessage(errortypes.INVALID_VALUE, "Value contains non-value character")
-    INVALID_LABEL: ErrorMessage = ErrorMessage(errortypes.INVALID_LABEL, "Label contains non-label character")
+    INVALID_VALUE: ErrorMessage = ErrorMessage(errortypes.INVALID_VALUE, "A value can only contain digits")
+    INVALID_LABEL: ErrorMessage = ErrorMessage(errortypes.INVALID_LABEL, "A Label can only contain letters, digits and underscores")
 
     # Instruction Pool Errors:
     PROC_TO_BRANCH_REDECL: ErrorMessage   = ErrorMessage(errortypes.BRANCH_LABEL  , "Attempting to redeclare a procedure label to a branch label")
-    DUPLICATE_BRANCH: ErrorMessage        = ErrorMessage(errortypes.BRANCH_LABEL  , "Duplicate branch error found")
+    DUPLICATE_BRANCH: ErrorMessage        = ErrorMessage(errortypes.BRANCH_LABEL  , "Duplicate branch label found")
     DUPLICATE_VAR: ErrorMessage           = ErrorMessage(errortypes.VARIABLE_LABEL, "Duplicate variable label found")
     VAR_TO_BRANCH_REDECL: ErrorMessage    = ErrorMessage(errortypes.BRANCH_LABEL  , "Attempting to redeclare a variable label to a branch label")
     PROC_TO_VAR_REDECL: ErrorMessage      = ErrorMessage(errortypes.VARIABLE_LABEL, "Attempting to redeclare a procedure label to a variable label")
     BRANCH_TO_VAR_REDECL: ErrorMessage     = ErrorMessage(errortypes.VARIABLE_LABEL, "Attempting to redeclare a branch label to a variable label")
 
     # Code Generator Errors:    
-    EXCESS_OPERANDS: ErrorMessage                  = ErrorMessage(errortypes.INVALID_OPERANDS, "Too many operands supplied for the given instruction")
-    EXPLICIT_OPERAND: ErrorMessage                 = ErrorMessage(errortypes.INVALID_OPERANDS, "Operand must be explicitly stated for the given instruction")
+    EXCESS_OPERANDS: ErrorMessage                  = ErrorMessage(errortypes.INVALID_OPERANDS       , "Too many operands supplied for the given instruction")
+    EXPLICIT_OPERAND: ErrorMessage                 = ErrorMessage(errortypes.INVALID_OPERANDS       , "Operand must be explicitly stated for the given instruction")
     REGISTER_MODE_MISMATCH: ErrorMessage           = ErrorMessage(errortypes.INVALID_ADDRESSING_MODE, "Non-register paired with register addressing mode")
     REGISTER_OPERAND_MISMATCH: ErrorMessage        = ErrorMessage(errortypes.INVALID_ADDRESSING_MODE, "register paired with non-register addressing mode")
-    UNDECLARED_LABEL: ErrorMessage                 = ErrorMessage(errortypes.INVALID_LABEL, "Attempting to use an undeclared label")
-    GPR_ZERO: ErrorMessage                         = ErrorMessage(errortypes.INVALID_REGISTER, "Cannot access GPR 0")
-    NO_SOURCE_OPERAND: ErrorMessage                = ErrorMessage(errortypes.INVALID_OPERANDS, "The source operand for a double operand instruction must be specified")
-    NON_REGISTER_INP_OPERAND: ErrorMessage         = ErrorMessage(errortypes.INVALID_OPERANDS, "INP instruction operand must be a register")
-    IMMEDIATE_MODE: ErrorMessage                   = ErrorMessage(errortypes.INVALID_OPERANDS, "Source operand of target instruction cannot be addressed in immediate mode")
-    NON_REGISTER_DESTINATION_OPERAND: ErrorMessage = ErrorMessage(errortypes.INVALID_OPERANDS, "Destination operand must be a register")
+    UNDECLARED_LABEL: ErrorMessage                 = ErrorMessage(errortypes.INVALID_LABEL          , "Attempting to use an undeclared label")
+    GPR_ZERO: ErrorMessage                         = ErrorMessage(errortypes.INVALID_REGISTER       , "Cannot access GPR 0")
+    NO_SOURCE_OPERAND: ErrorMessage                = ErrorMessage(errortypes.INVALID_OPERANDS       , "The source operand for a double operand instruction must be specified")
+    NON_REGISTER_INP_OPERAND: ErrorMessage         = ErrorMessage(errortypes.INVALID_OPERANDS       , "INP instruction operand must be a register")
+    IMMEDIATE_MODE: ErrorMessage                   = ErrorMessage(errortypes.INVALID_OPERANDS       , "Source operand of target instruction cannot be addressed in immediate mode")
+    NON_REGISTER_DESTINATION_OPERAND: ErrorMessage = ErrorMessage(errortypes.INVALID_OPERANDS       , "Destination operand must be a register")
