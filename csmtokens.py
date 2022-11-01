@@ -125,6 +125,8 @@ class tokenutils:
                 current_index += 1
                 position.column += 1
 
+        position.column -= 1
+
         return tokens
 
     @staticmethod
