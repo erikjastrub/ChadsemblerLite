@@ -105,8 +105,10 @@ class Lexer:
 
             if token[index] not in lexerdefaults.VALUE_CHARS:
 
-                self.__errors.record_error(self.__position.row, self.__position.column+index,
+                self.__errors.record_error(self.__position.row, self.__position.column,
                                     errormessages.INVALID_VALUE.type, errormessages.INVALID_VALUE.message)
+                return
+                           
             index += 1
 
     def __handle_label(self, token: str) -> None:
@@ -119,8 +121,9 @@ class Lexer:
 
             if token[index] not in lexerdefaults.LABEL_CHARS:
 
-                self.__errors.record_error(self.__position.row, self.__position.column+index,
+                self.__errors.record_error(self.__position.row, self.__position.column,
                                     errormessages.INVALID_LABEL.type, errormessages.INVALID_LABEL.message)
+                return
 
             index += 1
 
