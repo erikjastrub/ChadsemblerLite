@@ -54,7 +54,7 @@ class Preprocessor:
     def __skip_comment(self) -> None:
         """Iterate over and ignore a Chadsembly comment in a source code file"""
 
-        while self.__index < self.__length and \
+        while self.__index+1 < self.__length and \
               self.__source_code[self.__index] not in lexerdefaults.LINE_BREAK_CHARS:
 
             self.__index += 1
@@ -73,11 +73,7 @@ class Preprocessor:
             self.__index += 1
 
         directive = self.__source_code[lower:self.__index]
-
-        if directive == '!':
-
-            self.__index -= 1
-            self.__position.column -= 1
+        self.__index -= 1
 
         return directive
 
@@ -93,6 +89,8 @@ class Preprocessor:
 
         while self.__index < self.__length:
 
+            print(f"{self.__source_code[self.__index]=}")
+
             match self.__source_code[self.__index]:
 
                 case self.__comment_prefix:
@@ -103,10 +101,12 @@ class Preprocessor:
 
                     self.__handle_directive()
 
-            if self.__index < self.__length:
-
-                self.__position.advance_position(self.__source_code[self.__index], 1)
+            if self.__source_code[self.__index] in lexerdefaults.LINE_BREAK_CHARS:
+                
+                self.__position.row += 1
+                self.__position.column = 0
 
             self.__index += 1
+            self.__position.column += 1
 
         self.__errors.get_errors(defaults.PREPROCESSOR_ERRORS_HEADER)
