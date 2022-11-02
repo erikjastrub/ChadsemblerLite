@@ -120,8 +120,8 @@ Values -{max_operand_value}..{max_operand_value} in an Operand, Values -{max_add
 
         while True:
 
-            self.__handle_instruction(self.__memory.get(program_counter), program_counter)
-
             sleep(self.__clock_speed)
+            
+            self.__handle_instruction(self.__memory.get(program_counter), program_counter)
 
             program_counter: int = binarystring.read_unsigned_int(self.__memory.get(self.__program_counter_address))
