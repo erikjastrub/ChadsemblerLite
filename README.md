@@ -1,25 +1,15 @@
-# Empty:
+# Rust
 
-When translating the main branch into another language, this branch should be used as the template to provide an empty branch to begin working from
+- Install rust (https://www.rust-lang.org/)
 
-The README.md of any branch should outline how to run the code in the branch as well as any other information to do with the branch
+- Verify it is installed by typing 'cargo --version' in the command line/terminal
 
+- Download the code for the branch
 
-Recommended ordering of modules to implement:
-(shows the module and its dependencies)
+- Open the command line, ensuring your current working directory is the "chadsembler" directory
 
-- chadsembler (implement as you go along)
-- csmdefaults
-- csmerrors
-- csmtokens <- csmdefaults
-- binarystring
-- csmstructs <- binarystring, csmtokens
-- architecture <- csmstructs
-- precompilation <- csmtokens, csmdefaults, csmerrors
-- lexer <- csmerrors, csmtokens, csmdefaults, architecture
-- parser <- csmtokens, csmdefaults
-- instructionpools <- csmerrors, csmtokens, csmdefaults, csmstructs
-- semanticanalyser <- architecture, csmdefaults, csmtokens, csmerrors, csmstructs
-- codegenerator <- binarystring, architecture, csmtokens, csmdefaults, csmstructs
-- machineoperations <- architecutre, csmstructs, binarystring
-- virtualmachine <- architecture, binarystring, csmdefaults, csmstructs, machineoperations
+- Type "cargo build --release" into the command-line/terminal
+
+- An executable with the name 'chadsembler.exe' can then be found in chadsembler\target\release"
+
+- This is the compiled binary/executable, enjoy!
