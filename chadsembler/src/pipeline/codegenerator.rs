@@ -51,7 +51,7 @@ fn resolve_operand(operand: &Operand, scope_symbol_table: &HashMap<&String, Symb
                 
                 // GPR Zero cannot be accessible so the value must be wrapped between 1..n (inclusive)
                 sysdefaults::wrap_bound(1, (number_gprs) as isize, 
-                                     operand.operand_value.token_value.parse::<isize>().unwrap() * -1) 
+                                     operand.operand_value.token_value.parse::<isize>().unwrap())  * -1 
             }
         },
 
